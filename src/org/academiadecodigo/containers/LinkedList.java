@@ -4,31 +4,30 @@ import java.util.Iterator;
 
 public class LinkedList<E> implements Iterable<E> {
 
-    private Node<E> head;
-    private int size;
+    private Node head;
+    private int size = 0;
 
     public LinkedList() {
 
-        this.head = null;
+        this.head = new Node();
     }
 
     public void add(E data) {
 
-        Node<E> node = new Node(data);
+        Node node = new Node(data);
+        Node iterator = head;
 
-        if (head == null) {
-            head = node;
+        while(iterator.next != null) {
+            iterator = iterator.next;
         }
+        iterator.next = new Node(data);
+        size++;
     }
 
     public E get(int index) {
 
-        Node<E> iterator = head;
+        Node iterator = head;
         int i = 0;
-
-        if (iterator == null) {
-            return null;
-        }
 
         if (index < 0 || index > size) {
 
@@ -37,7 +36,7 @@ public class LinkedList<E> implements Iterable<E> {
 
         while(iterator.next != null) {
             if (i == index) {
-                return iterator.data;
+                return iterator.next.data;
             }
             iterator = iterator.next;
             i++;
@@ -46,22 +45,107 @@ public class LinkedList<E> implements Iterable<E> {
         return null;
     }
 
+    public E get (E data) {
+
+        Node iterator = head;
+
+        if (data == null) {
+
+            return null;
+        }
+
+        while(iterator.next != null) {
+            if (iterator.next.data.equals(data)) {
+                return iterator.next.data;
+            }
+            iterator = iterator.next;
+        }
+
+        return null;
+    }
+
     public void remove(E data) {
 
-        Node<E> iterator = head;
+        Node iterator = head;
 
+        if (data == null) {
+            return;
+        }
 
+        while (iterator.next != null) {
+
+            if (iterator.next.data.equals(data)) {
+                iterator.next = iterator.next.next;
+                size--;
+                return;
+            }
+            iterator = iterator.next;
+        }
+    }
+
+    public int indexOf(E data) {
+
+        Node iterator = head;
+        int i = 0;
+
+        if (data == null) {
+
+            return -1;
+        }
+
+        while(iterator.next != null) {
+            if (iterator.next.data.equals(data)) {
+                return i;
+            }
+            iterator = iterator.next;
+            i++;
+        }
+
+        return -1;
+    }
+
+    public int size() {
+
+        return size;
     }
 
     @Override
     public Iterator<E> iterator() {
-        return null;
+        return new Iterator<E>() {
+
+            Node iterator = head;
+
+            @Override
+            public boolean hasNext() {
+                return iterator.next != null;
+            }
+
+            @Override
+            public E next() {
+
+                if (!hasNext()) {
+                    return null;
+                }
+                iterator = iterator.next;
+                return iterator.data;
+            }
+
+            @Override
+            public void remove() {
+                LinkedList.this.remove(iterator.next.data);
+            }
+        };
     }
 
-    private class Node<E> {
+    private class Node {
 
         private E data;
         private Node next;
+
+        Node() {
+            this.data = null;
+            this.next = null;
+        }
 
         Node(E data) {
             this.data = data;
